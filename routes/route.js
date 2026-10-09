@@ -140,11 +140,37 @@ const verifyToken = (req, res, next) => {
 };
 
 
+const verifyAdmin = async (req, res, next) => {
+    try {
+        const user = await User.findById(req.userId);
+
+        if (!user) {
+            return res.status(404).json({
+                message: 'User not found.'
+            });
+        }
+
+        if (user.role !== 'admin') {
+            return res.status(403).json({
+                message: 'Admin access required.'
+            });
+        }
+
+        next();
+
+    } catch (err) {
+        res.status(500).json({
+            message: err.message || 'Something went wrong.'
+        });
+    }
+};
+
+
 // -----------------------------
 // Protected Dashboard
 // -----------------------------
 
-router.get('/api/dashboard', 
+router.get('/dashboard', 
     verifyToken,
     async (req, res) => {
 
@@ -173,6 +199,182 @@ router.get('/api/dashboard',
         }
     }
 );
+
+
+ 
+router.get('/users',  async (req, res) => {
+    console.log('Fecthing users...')
+
+    try {
+
+        const users = await User
+            .find()
+            .select('-password')
+            .sort({ createdAt: -1 });
+
+        res.status(200).json(users);
+
+    } catch (err) {
+
+        res.status(500).json({
+            message: err.message || 'Something went wrong.'
+        });
+    }
+});
+
+// -----------------------------
+// Create User - Admin Only
+// -----------------------------
+
+router.post('/users', verifyToken, verifyAdmin, async (req, res) => {
+
+    try {
+
+        const {
+            username,
+            email,
+            password,
+            role
+        } = req.body;
+
+        const saltRounds = 10;
+
+        const hashedPassword = await bcrypt.hash(
+            password,
+            saltRounds
+        );
+
+        const user = new User({
+            username,
+            email,
+            password: hashedPassword,
+            role: role || 'user'
+        });
+
+        const result = await user.save();
+
+        res.status(201).json({
+            id: result._id,
+            username: result.username,
+            email: result.email,
+            role: result.role,
+            message: 'User created successfully!'
+        });
+
+    } catch (err) {
+
+        if (err.code === 11000) {
+
+            const field = Object.keys(err.keyPattern)[0];
+
+            return res.status(400).json({
+                message: `${field} is already in use!`
+            });
+        }
+
+        res.status(500).json({
+            message: err.message || 'Something went wrong.'
+        });
+    }
+});
+
+
+// -----------------------------
+// Update User - Admin Only
+// -----------------------------
+
+router.put('/users/:id', verifyToken, verifyAdmin, async (req, res) => {
+
+    try {
+
+        const {
+            username,
+            email,
+            password,
+            role
+        } = req.body;
+
+        const updateData = {
+            username,
+            email,
+            role
+        };
+
+        if (password) {
+            updateData.password = await bcrypt.hash(
+                password,
+                10
+            );
+        }
+
+        const updatedUser = await User
+            .findByIdAndUpdate(
+                req.params.id,
+                updateData,
+                {
+                    new: true,
+                    runValidators: true
+                }
+            )
+            .select('-password');
+
+        if (!updatedUser) {
+            return res.status(404).json({
+                message: 'User not found.'
+            });
+        }
+
+        res.status(200).json({
+            message: 'User updated successfully!',
+            user: updatedUser
+        });
+
+    } catch (err) {
+
+        if (err.code === 11000) {
+
+            const field = Object.keys(err.keyPattern)[0];
+
+            return res.status(400).json({
+                message: `${field} is already in use!`
+            });
+        }
+
+        res.status(500).json({
+            message: err.message || 'Something went wrong.'
+        });
+    }
+});
+
+// -----------------------------
+// Delete User - Admin Only
+// -----------------------------
+
+router.delete('/users/:id', verifyToken, verifyAdmin, async (req, res) => {
+
+    try {
+
+        const deletedUser = await User.findByIdAndDelete(
+            req.params.id
+        );
+
+        if (!deletedUser) {
+            return res.status(404).json({
+                message: 'User not found.'
+            });
+        }
+
+        res.status(200).json({
+            message: 'User deleted successfully!'
+        });
+
+    } catch (err) {
+
+        res.status(500).json({
+            message: err.message || 'Something went wrong.'
+        });
+    }
+});
 
 
 

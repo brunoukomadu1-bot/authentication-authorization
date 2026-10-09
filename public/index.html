@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JWT Fullstack Authentication App</title>
+    <style>
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            max-width: 600px; /* Increased slightly for better table presentation */
+            margin: 50px auto; 
+            padding: 20px; 
+            background-color: #f8f9fa;
+            color: #333;
+        }
+        .hidden {
+            display: none;
+        }
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        nav a {
+            margin-right: 15px;
+            text-decoration: none;
+            color: #007bff;
+            font-weight: 500;
+        }
+        nav a:hover {
+            text-decoration: underline;
+        }
+        #logout-btn {
+            background-color: #dc3545;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: background 0.2s;
+        }
+        #logout-btn:hover {
+            background-color: #bd2130;
+        }
+        #system-msg {
+            margin-bottom: 20px;
+            padding: 10px;
+            border-radius: 4px;
+            font-size: 0.9rem;
+        }
+        
+        /* --- Modern Table Styling --- */
+        .table-container {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        }
+        h3 {
+            margin-top: 0;
+            margin-bottom: 15px;
+            color: #495057;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+            font-size: 0.95rem;
+        }
+        th {
+            background-color: #f1f3f5;
+            color: #495057;
+            font-weight: 600;
+            padding: 12px 15px;
+            border-bottom: 2px solid #dee2e6;
+        }
+        td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #dee2e6;
+            color: #495057;
+        }
+        /* Zebra striping for rows */
+        tbody tr:nth-of-type(even) {
+            background-color: #f8f9fa;
+        }
+        /* Hover state for rows */
+        tbody tr:hover {
+            background-color: #f1f3f5;
+            transition: background-color 0.2s ease;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <nav id="auth-container">
+            <a href="#login" id="login-link">Login</a>
+            <a href="#signup" id="signup-link">Signup</a>
+        </nav>
+        <div id="dashboard-container" class="hidden">
+            <button id="logout-btn">Logout</button>
+        </div>
+    </header>
+
+    <div id="system-msg"></div>
+
+    <div class="table-container">
+        <h3>Registered Users</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Username</th>
+                    <th>Email</th>
+                </tr>
+            </thead>
+            <tbody id="user-table-body">
+                <!-- Display list of users here. This is your home page -->
+            </tbody>
+        </table>
+    </div>
+
+    <script src="index.js"></script>
+</body>
+</html>
+

@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>dashboard | JWT Fullstack Authentication App</title>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 400px; margin: 50px auto; padding: 20px; }
+        .box { border: 1px solid #ccc; padding: 20px; border-radius: 5px; margin-bottom: 20px; }
+        .hidden { display: none; }
+        input { width: 90%; padding: 8px; margin: 10px 0; display: block; }
+        button { padding: 10px 15px; background: #007bff; color: white; border: none; border-radius: 3px; cursor: pointer;}
+        button.logout { background: #dc3545; }
+        p.message { color: #d9534f; font-weight: bold; }
+
+        .user-box {
+    border: 1px solid #ddd;
+    padding: 15px;
+    margin-top: 15px;
+    border-radius: 5px;
+}
+
+.user-box h3 {
+    margin-top: 0;
+}
+
+.delete-btn {
+    background: #dc3545;
+}
+
+select {
+    width: 90%;
+    padding: 8px;
+    margin: 10px 0;
+}
+    </style>
+</head>
+<body>
+
+    <!-- Auth Forms Container -->
+    <div id="auth-container">
+        
+    </div>
+
+    <!-- Protected View Container -->
+    <div id="dashboard-container" class="hidden">
+        <div class="box">
+            <h2 id="welcome-banner">Welcome Dashboard</h2>
+            <p id="dashboard-data">Loading secret assets...</p>
+            <button class="logout" id="logout-btn">Log Out</button>
+             <div class="box">
+
+    <h2>User Management</h2>
+
+    <button id="show-create-user">
+        Create User
+    </button>
+
+    <div id="create-user-form" class="hidden">
+
+        <h3>Create New User</h3>
+
+        <input
+            type="text"
+            id="new-username"
+            placeholder="Username"
+        >
+
+        <input
+            type="email"
+            id="new-email"
+            placeholder="Email"
+        >
+
+        <input
+            type="password"
+            id="new-password"
+            placeholder="Password"
+        >
+
+        <select id="new-role">
+            <option value="user">User</option>
+            <option value="admin">Admin</option>
+        </select>
+
+        <button id="create-user-btn">
+            Create
+        </button>
+
+    </div>
+
+    <div id="users-list">
+        Loading users...
+    </div>
+
+</div>
+
+    
+        </div>
+    </div>
+    <button onclick="deleteUser('123')"></button>
+    
+<p class="message" id="system-msg"></p>
+    <script src="index.js"></script>
+</body>
+</html>
