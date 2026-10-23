@@ -61,10 +61,21 @@ router.post('/login', async (req, res) => {
     }
 });
 
-// signup
+
+// -----------------------------
+// Signup
+// -----------------------------
+
 router.post('/signup', async (req, res) => {
     try {
         const { username, email, password } = req.body;
+
+        // ✅ ADDED: prevents bcrypt crash when fields are missing
+        if (!username || !email || !password) {
+            return res.status(400).json({
+                message: 'username, email and password are required.'
+            });
+        }
 
         const saltRounds = 10;
 
@@ -170,40 +181,47 @@ const verifyAdmin = async (req, res, next) => {
 // Protected Dashboard
 // -----------------------------
 
-router.get('/dashboard', 
-    verifyToken,
-    async (req, res) => {
+router.get('/dashboard', verifyToken, async (req, res) => {
+    try {
+        // 1. Retrieve the authenticated user
+        const user = await User
+            .findById(req.userId)
+            .select('-password');
 
-        try {
-
-            const user = await User
-                .findById(req.userId)
-                .select('-password');
-
-            if (!user) {
-                return res.status(404).json({
-                    message: 'User not found.'
-                });
-            }
-
-            res.status(200).json({
-                message: 'Access granted!',
-                user
-            });
-
-        } catch (err) {
-
-            res.status(500).json({
-                message: err.message || 'Something went wrong.'
+        // 2. Ensure the authenticated user exists
+        if (!user) {
+            return res.status(404).json({
+                message: 'User not found.'
             });
         }
+
+        // 3. Retrieve all users, excluding passwords
+        const users = await User
+            .find()
+            .select('-password')
+            .sort({ createdAt: -1 });
+
+        // 4. Return the authenticated user and all users
+        return res.status(200).json({
+            message: 'Access granted!',
+            user,
+            users
+        });
+
+    } catch (err) {
+        return res.status(500).json({
+            message: err.message || 'Something went wrong.'
+        });
     }
-);
+});
 
+// -----------------------------
+// Get All Users - Admin Only
+// -----------------------------
 
- 
-router.get('/users',  async (req, res) => {
-    console.log('Fecthing users...')
+// ✅ CHANGED: was publicly accessible, now protected
+router.get('/users',async (req, res) => {
+    console.log('Fetching users...')
 
     try {
 
@@ -236,6 +254,13 @@ router.post('/users', verifyToken, verifyAdmin, async (req, res) => {
             password,
             role
         } = req.body;
+
+        // ✅ ADDED: clear 400 error instead of a cryptic bcrypt crash
+        if (!username || !email || !password) {
+            return res.status(400).json({
+                message: 'username, email and password are required.'
+            });
+        }
 
         const saltRounds = 10;
 
@@ -277,7 +302,6 @@ router.post('/users', verifyToken, verifyAdmin, async (req, res) => {
         });
     }
 });
-
 
 // -----------------------------
 // Update User - Admin Only
@@ -353,6 +377,13 @@ router.put('/users/:id', verifyToken, verifyAdmin, async (req, res) => {
 router.delete('/users/:id', verifyToken, verifyAdmin, async (req, res) => {
 
     try {
+
+        // ✅ ADDED: stop admins from deleting their own account
+        if (String(req.userId) === String(req.params.id)) {
+            return res.status(400).json({
+                message: "You can't delete your own account."
+            });
+        }
 
         const deletedUser = await User.findByIdAndDelete(
             req.params.id

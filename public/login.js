@@ -32,10 +32,11 @@ document.addEventListener('DOMContentLoaded', () => {
             if (res.ok) {
                 localStorage.setItem('accessToken', data.token);
                 localStorage.setItem('username', data.username);
+                window.location.href='dashboard.html'
 
                 showMessage('');
                 loginForm.reset();
-                //loadDashboard(); Redirect to dashboard.html
+                window.location('dashboard.html')
             } else {
                 showMessage(data.message || 'Login failed.', true);
             }
