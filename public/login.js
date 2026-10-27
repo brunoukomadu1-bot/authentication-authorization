@@ -28,10 +28,11 @@ document.addEventListener('DOMContentLoaded', () => {
             });
 
             const data = await res.json();
+            console.log(data);
 
             if (res.ok) {
                 localStorage.setItem('accessToken', data.token);
-                localStorage.setItem('username', data.username);
+                localStorage.setItem('user', data);
                 window.location.href='dashboard.html'
 
                 showMessage('');
