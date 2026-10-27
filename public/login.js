@@ -32,7 +32,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             if (res.ok) {
                 localStorage.setItem('accessToken', data.token);
-                localStorage.setItem('user', data);
+                localStorage.setItem('user', JSON.stringify(data));
                 window.location.href='dashboard.html'
 
                 showMessage('');
@@ -67,6 +67,6 @@ document.addEventListener('DOMContentLoaded', () => {
     // So you need to fix the code below
     const existingToken = localStorage.getItem('accessToken');
     if (existingToken) {
-        loadDashboard();
+        window.location.href='dashboard.html'
     }
 });
