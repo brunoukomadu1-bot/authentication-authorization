@@ -307,13 +307,6 @@
             return false;
         }
 
-        if (!isAdmin(user)) {
-            // Do not allow non-admin users to initialize the admin UI.
-            // The backend must enforce the same restriction.
-            window.location.replace("./index.html");
-            return false;
-        }
-
         return true;
     }
 
